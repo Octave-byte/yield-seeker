@@ -47,41 +47,46 @@ if st.button("Find Opportunities"):
 
     # Check how much APY earn your pools
     matched_pools = utils.match_pools(protocol_balance_adj, pools_2)
-    matched_pools = matched_pools.merge(utils.mapping_protocol, left_on = "protocol_id", right_on = "debank_id", how="left")
+    if not matched_pools.empty:
+        matched_pools = matched_pools.merge(utils.mapping_protocol, left_on="protocol_id", right_on="debank_id", how="left")
+
 
 
     # Check how much APY you could have by underlying, chain (if applied), vertical (if applied)
     similar_pools = utils.find_similar_pools(protocol_balance_adj, pools_2, vertical=vertical_opti, chain=chain_opti, min_tvl=min_tvl_opti)
-    similar_pools = similar_pools.merge(utils.mapping_protocol, left_on = "pool_project", right_on = "defillama_id", how="left")
+    if not similar_pools.empty:
+        similar_pools = similar_pools.merge(utils.mapping_protocol, left_on = "pool_project", right_on = "defillama_id", how="left")
 
 
     
-    # Yield Seeker Section
+# Yield Seeker Section
 st.header("Yield Seeker Results")
+
 if not df_top_opportunities.empty:
     st.subheader("Top Yield Opportunities")
     df_display = df_top_opportunities[["chain", "project", "symbol", "tvlUsd", "apy", "ilRisk", "underlying", "url"]]
     df_display = df_display.rename(columns={"tvlUsd": "TVL", "apy": "APY"})
-    
-    for _, row in df_display.iterrows():
-        st.markdown(f"**[{row['symbol']}]({row['url']})** on {row['project']} ({row['chain']})")
-        st.markdown(f"- TVL: ${row['TVL']:,}\n- APY: {row['APY']:.2f}%\n- IL Risk: {row['ilRisk']}\n- Underlying: {row['underlying']}")
-        st.write("---")
+    st.dataframe(df_display)  # Display as a table
 else:
     st.write("No opportunities found.")
 
+# Keep Potential Earnings as a list
 if not df_revenue.empty:
     st.subheader("Potential Earnings")
     for _, row in df_revenue.iterrows():
-        st.markdown(f"If you made **{row['underlying']}** work at its full potential, you'd earn **${row['potential_revenue']:.2f}** on a yearly basis.")
+        st.markdown(
+            f"If you made **{row['underlying']}** work at its full potential, "
+            f"you'd earn **${row['potential_revenue']:.2f}** on a yearly basis."
+        )
 
 # Yield Optimizer Section
 st.header("Yield Optimizer Results")
+
 if not matched_pools.empty:
     st.subheader("Current Yield Performance")
-    for _, row in matched_pools.iterrows():
-        st.markdown(f"We found that your **{row['pool_project']}** based on **{row['protocol_asset']}** earns **{row['pool_apy']:.2f}%** a year. [Check it out]({row['url']})")
-        st.write("---")
+    df_matched_display = matched_pools[["pool_project", "protocol_asset", "pool_apy", "url"]]
+    df_matched_display = df_matched_display.rename(columns={"pool_project": "Project", "protocol_asset": "Asset", "pool_apy": "APY"})
+    st.dataframe(df_matched_display)  # Display as a table
 else:
     st.write("No matched pools found.")
 
@@ -89,10 +94,6 @@ if not similar_pools.empty:
     st.subheader("Alternative Yield Opportunities")
     df_similar_display = similar_pools[["protocol_id", "pool_project", "pool_chain", "pool_symbol", "pool_apy", "url"]]
     df_similar_display = df_similar_display.rename(columns={"pool_chain": "Chain", "pool_symbol": "Symbol", "pool_apy": "APY"})
-    
-    for _, row in df_similar_display.iterrows():
-        st.markdown(f"**[{row['pool_project']}]({row['url']})** on {row['Chain']} - **{row['Symbol']}**")
-        st.markdown(f"- APY: {row['APY']:.2f}%")
-        st.write("---")
+    st.dataframe(df_similar_display)  # Display as a table
 else:
     st.write("No alternative pools found.")
