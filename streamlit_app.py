@@ -80,7 +80,7 @@ st.header("Yield Optimizer Results")
 
 if not matched_pools.empty:
     st.subheader("Current Yield Performance")
-    df_matched_display = matched_pools[["pool_project", "protocol_asset", "pool_apy","pool_apy_30d", "url"]]
+    df_matched_display = matched_pools[["pool_project", "protocol_asset", "pool_apy", "pool_apy_30d", "url"]]
     df_matched_display = df_matched_display.rename(columns={"pool_project": "Project", "protocol_asset": "Asset", "pool_apy": "APY", "pool_apy_30d": "30d APY"})
     st.dataframe(df_matched_display)  # Display as a table
 else:
