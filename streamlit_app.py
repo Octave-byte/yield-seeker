@@ -110,8 +110,11 @@ with tab2:
         
         if not best_yield_opportunities.empty:
             best_yield_opportunities = best_yield_opportunities.sort_values(by="apyMean30d", ascending=False)
-            df_best_yield = best_yield_opportunities[["underlying", "vertical", "tvl", "apy", "apyMean30d", "url"]]
-            df_best_yield = df_best_yield.rename(columns={"tvl": "TVL", "apy": "APY", "apyMean30d": "30d APY"})
+            best_yield_opportunities = best_yield_opportunities.merge(utils.mapping_protocol, left_on="project", right_on="defillama_id", how="left")
+
+            df_best_yield = best_yield_opportunities[["chain", "project", "symbol", "category", "underlying", "tvlUsd", "apy", "apyMean30d","url"]]
+            df_best_yield = df_best_yield.rename(columns={"tvlUsd": "TVL", "apy": "APY", "apyMean30d": "30d APY"})
+            df_best_yield = df_best_yield.head(30)
             st.dataframe(df_best_yield)
         else:
             st.write("No opportunities found.")
