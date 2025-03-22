@@ -101,7 +101,7 @@ with tab1:
 with tab2: 
     st.header("Find the Best Yield in Town")
     
-    underlying_assets = st.multiselect("Select Underlying Asset", ["STABLE", "ETH", "BTC", "AVAX","BNB"], default=["STABLE"])
+    underlying_assets = st.multiselect("Select Underlying Asset", ["stable", "ETH", "BTC", "AVAX","BNB"], default=["stable"])
     min_tvl_yield = st.number_input("Minimum TVL Yield", min_value=0, value=1_000_000, step=100_000)
     selected_verticals = st.multiselect("Choose Verticals", ["liquid_staking", "yield", "money_market", "dex", "perps"], default=["yield","liquid_staking"])
 

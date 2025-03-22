@@ -3,7 +3,6 @@ import requests
 import pandas as pd
 from pathlib import Path
 
-
 ###################
 ## READING DATA
 ###################
@@ -300,7 +299,7 @@ def find_similar_pools(protocol_balance_df, pools_df, vertical=False, chain=Fals
     suggestions_df = pd.DataFrame(suggestions)
     return suggestions_df
 
-    def find_best_opportunities(selected_verticals, min_tvl_yield, underlying_assets):
-        pools = get_pools(min_tvl_yield,selected_verticals, category=True)
-        pools = pools[pools['underlying'].isin(underlying_assets)]
+def find_best_opportunities(selected_verticals, min_tvl_yield, underlying_assets):
+    pools = get_pools(min_tvl_yield,selected_verticals, category=True)
+    pools = pools[pools['underlying'].isin(underlying_assets)]
     return pools
