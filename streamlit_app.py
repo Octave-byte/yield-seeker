@@ -57,54 +57,42 @@ if st.button("Find Opportunities"):
 
     
     # Yield Seeker Section
-    st.header("Yield Seeker Results")
-    if not df_top_opportunities.empty:
-        st.subheader("Top Yield Opportunities")
-        df_display = df_top_opportunities[["chain", "project", "symbol", "tvlUsd", "apy", "ilRisk", "underlying", "url", "logo"]]
-        df_display = df_display.rename(columns={"tvlUsd": "TVL", "apy": "APY"})
-        
-        for _, row in df_display.iterrows():
-            col1, col2 = st.columns([1, 5])
-            with col1:
-                st.image(row["logo"], width=50)
-            with col2:
-                st.markdown(f"**[{row['symbol']}]({row['url']})** on {row['project']} ({row['chain']})")
-                st.markdown(f"- TVL: ${row['TVL']:,}\n- APY: {row['APY']:.2f}%\n- IL Risk: {row['ilRisk']}\n- Underlying: {row['underlying']}")
-                st.write("---")
-    else:
-        st.write("No opportunities found.")
+st.header("Yield Seeker Results")
+if not df_top_opportunities.empty:
+    st.subheader("Top Yield Opportunities")
+    df_display = df_top_opportunities[["chain", "project", "symbol", "tvlUsd", "apy", "ilRisk", "underlying", "url"]]
+    df_display = df_display.rename(columns={"tvlUsd": "TVL", "apy": "APY"})
     
-    if not df_revenue.empty:
-        st.subheader("Potential Earnings")
-        for _, row in df_revenue.iterrows():
-            st.markdown(f"If you made **{row['underlying']}** work at its full potential, you'd earn **${row['potential_revenue']:.2f}** on a yearly basis.")
+    for _, row in df_display.iterrows():
+        st.markdown(f"**[{row['symbol']}]({row['url']})** on {row['project']} ({row['chain']})")
+        st.markdown(f"- TVL: ${row['TVL']:,}\n- APY: {row['APY']:.2f}%\n- IL Risk: {row['ilRisk']}\n- Underlying: {row['underlying']}")
+        st.write("---")
+else:
+    st.write("No opportunities found.")
+
+if not df_revenue.empty:
+    st.subheader("Potential Earnings")
+    for _, row in df_revenue.iterrows():
+        st.markdown(f"If you made **{row['underlying']}** work at its full potential, you'd earn **${row['potential_revenue']:.2f}** on a yearly basis.")
+
+# Yield Optimizer Section
+st.header("Yield Optimizer Results")
+if not matched_pools.empty:
+    st.subheader("Current Yield Performance")
+    for _, row in matched_pools.iterrows():
+        st.markdown(f"We found that your **{row['pool_project']}** based on **{row['protocol_asset']}** earns **{row['pool_apy']:.2f}%** a year. [Check it out]({row['url']})")
+        st.write("---")
+else:
+    st.write("No matched pools found.")
+
+if not similar_pools.empty:
+    st.subheader("Alternative Yield Opportunities")
+    df_similar_display = similar_pools[["protocol_id", "pool_project", "pool_chain", "pool_symbol", "pool_apy", "url"]]
+    df_similar_display = df_similar_display.rename(columns={"pool_chain": "Chain", "pool_symbol": "Symbol", "pool_apy": "APY"})
     
-    # Yield Optimizer Section
-    st.header("Yield Optimizer Results")
-    if not matched_pools.empty:
-        st.subheader("Current Yield Performance")
-        for _, row in matched_pools.iterrows():
-            col1, col2 = st.columns([1, 5])
-            with col1:
-                st.image(row["logo"], width=50)
-            with col2:
-                st.markdown(f"We found that your **{row['pool_project']}** based on **{row['protocol_asset']}** earns **{row['pool_apy']:.2f}%** a year. [Check it out]({row['url']})")
-                st.write("---")
-    else:
-        st.write("No matched pools found.")
-    
-    if not similar_pools.empty:
-        st.subheader("Alternative Yield Opportunities")
-        df_similar_display = similar_pools[["protocol_id", "pool_project", "pool_chain", "pool_symbol", "pool_apy", "url", "logo"]]
-        df_similar_display = df_similar_display.rename(columns={"pool_chain": "Chain", "pool_symbol": "Symbol", "pool_apy": "APY"})
-        
-        for _, row in df_similar_display.iterrows():
-            col1, col2 = st.columns([1, 5])
-            with col1:
-                st.image(row["logo"], width=50)
-            with col2:
-                st.markdown(f"**[{row['pool_project']}]({row['url']})** on {row['Chain']} - **{row['Symbol']}**")
-                st.markdown(f"- APY: {row['APY']:.2f}%")
-                st.write("---")
-    else:
-        st.write("No alternative pools found.")
+    for _, row in df_similar_display.iterrows():
+        st.markdown(f"**[{row['pool_project']}]({row['url']})** on {row['Chain']} - **{row['Symbol']}**")
+        st.markdown(f"- APY: {row['APY']:.2f}%")
+        st.write("---")
+else:
+    st.write("No alternative pools found.")
