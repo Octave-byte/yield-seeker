@@ -1,6 +1,3 @@
-
-
-
 import streamlit as st
 import pandas as pd
 from pathlib import Path
@@ -27,39 +24,38 @@ min_tvl_opti = st.number_input("Minimum TVL for optimization", min_value=0, valu
 vertical_opti = st.checkbox("Keep positions in the same vertical", value=True)
 chain_opti = st.checkbox("Keep positions on the same chain", value=True)
 
-if st.button("Find Opportunities"):
-    #1 - PUT YOUR TOKENS AT WORK
+# ✅ Initialize empty DataFrames to avoid errors
+df_top_opportunities = pd.DataFrame()
+df_revenue = pd.DataFrame()
+matched_pools = pd.DataFrame()
+similar_pools = pd.DataFrame()
 
+if st.button("Find Opportunities"):
+    # 1 - PUT YOUR TOKENS AT WORK
     token_balance = utils.get_token_balance(address, st.secrets["auth_token"])
-    pools = utils.get_pools(min_tvl, categories, category= True)
+    pools = utils.get_pools(min_tvl, categories, category=True)
     df_top_opportunities, df_revenue = utils.analyze_yield_opportunities(token_balance, pools)
     
-    
-    #2 - OPTIMISE YOUR POSITION
+    # 2 - OPTIMIZE YOUR POSITION
     protocol_balance = utils.get_protocols(address, st.secrets["auth_token"])
     protocol_balance["id"] = protocol_balance["id"].apply(lambda x: x.split("_")[-1] if "_" in x else x)
-    protocol_balance_adj = protocol_balance.merge(utils.mapping_protocol, left_on = "id", right_on = "debank_id", how="left")
-    protocol_balance_adj = protocol_balance_adj.merge(utils.mapping_chain, left_on = "chain", right_on = "debank_chain_id", how="left")
-    protocol_balance_adj = protocol_balance_adj.merge(utils.mapping_protocol_category, left_on = "defillama_id", right_on = "project", how="left")
-    
+    protocol_balance_adj = protocol_balance.merge(utils.mapping_protocol, left_on="id", right_on="debank_id", how="left")
+    protocol_balance_adj = protocol_balance_adj.merge(utils.mapping_chain, left_on="chain", right_on="debank_chain_id", how="left")
+    protocol_balance_adj = protocol_balance_adj.merge(utils.mapping_protocol_category, left_on="defillama_id", right_on="project", how="left")
     
     pools_2 = utils.get_pools(min_tvl_opti, categories)
 
-    # Check how much APY earn your pools
+    # Check how much APY your pools earn
     matched_pools = utils.match_pools(protocol_balance_adj, pools_2)
     if not matched_pools.empty:
         matched_pools = matched_pools.merge(utils.mapping_protocol, left_on="protocol_id", right_on="debank_id", how="left")
 
-
-
-    # Check how much APY you could have by underlying, chain (if applied), vertical (if applied)
+    # Find alternative pools
     similar_pools = utils.find_similar_pools(protocol_balance_adj, pools_2, vertical=vertical_opti, chain=chain_opti, min_tvl=min_tvl_opti)
     if not similar_pools.empty:
-        similar_pools = similar_pools.merge(utils.mapping_protocol, left_on = "pool_project", right_on = "defillama_id", how="left")
+        similar_pools = similar_pools.merge(utils.mapping_protocol, left_on="pool_project", right_on="defillama_id", how="left")
 
-
-    
-# Yield Seeker Section
+# ✅ Yield Seeker Section
 st.header("Yield Seeker Results")
 
 if not df_top_opportunities.empty:
@@ -70,7 +66,7 @@ if not df_top_opportunities.empty:
 else:
     st.write("No opportunities found.")
 
-# Keep Potential Earnings as a list
+# ✅ Keep Potential Earnings as a list
 if not df_revenue.empty:
     st.subheader("Potential Earnings")
     for _, row in df_revenue.iterrows():
@@ -79,7 +75,7 @@ if not df_revenue.empty:
             f"you'd earn **${row['potential_revenue']:.2f}** on a yearly basis."
         )
 
-# Yield Optimizer Section
+# ✅ Yield Optimizer Section
 st.header("Yield Optimizer Results")
 
 if not matched_pools.empty:
