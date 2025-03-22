@@ -230,7 +230,8 @@ def match_pools(protocol_balance_df, pools_df):
                     "pool_chain": pool["chain"],
                     "pool_symbol": pool["symbol"],
                     "pool_tvl": pool["tvlUsd"],
-                    "pool_apy": pool["apy"]
+                    "pool_apy": pool["apy"],
+                    "pool_apy_30d": pool["apyMean30d"]
                 })
 
     # Convert matches to DataFrame
@@ -291,7 +292,8 @@ def find_similar_pools(protocol_balance_df, pools_df, vertical=False, chain=Fals
                     "pool_symbol": pool["symbol"],
                     "pool_tvl": pool["tvlUsd"],
                     "pool_apy": pool["apy"],
-                    "pool_category": pool["category"]
+                    "pool_category": pool["category"],
+                    "pool_apy_30d": pool["apyMean30d"]
                 })
 
     # Convert matches to DataFrame

@@ -60,8 +60,8 @@ st.header("Yield Seeker Results")
 
 if not df_top_opportunities.empty:
     st.subheader("Top Yield Opportunities")
-    df_display = df_top_opportunities[["chain", "project", "symbol", "tvlUsd", "apy", "ilRisk", "underlying", "url"]]
-    df_display = df_display.rename(columns={"tvlUsd": "TVL", "apy": "APY"})
+    df_display = df_top_opportunities[["chain", "project", "symbol", "tvlUsd", "apy", "apyMean30d", "ilRisk", "underlying", "url"]]
+    df_display = df_display.rename(columns={"tvlUsd": "TVL", "apy": "APY","apyMean30d": "30d APY"})
     st.dataframe(df_display)  # Display as a table
 else:
     st.write("No opportunities found.")
@@ -80,16 +80,16 @@ st.header("Yield Optimizer Results")
 
 if not matched_pools.empty:
     st.subheader("Current Yield Performance")
-    df_matched_display = matched_pools[["pool_project", "protocol_asset", "pool_apy", "url"]]
-    df_matched_display = df_matched_display.rename(columns={"pool_project": "Project", "protocol_asset": "Asset", "pool_apy": "APY"})
+    df_matched_display = matched_pools[["pool_project", "protocol_asset", "pool_apy","pool_apy_30d", "url"]]
+    df_matched_display = df_matched_display.rename(columns={"pool_project": "Project", "protocol_asset": "Asset", "pool_apy": "APY", "pool_apy_30d": "30d APY"})
     st.dataframe(df_matched_display)  # Display as a table
 else:
     st.write("No matched pools found.")
 
 if not similar_pools.empty:
     st.subheader("Alternative Yield Opportunities")
-    df_similar_display = similar_pools[["protocol_id", "pool_project", "pool_chain", "pool_symbol", "pool_apy", "url"]]
-    df_similar_display = df_similar_display.rename(columns={"pool_chain": "Chain", "pool_symbol": "Symbol", "pool_apy": "APY"})
+    df_similar_display = similar_pools[["protocol_id", "pool_project", "pool_chain", "pool_symbol", "pool_apy","pool_apy_30d", "url"]]
+    df_similar_display = df_similar_display.rename(columns={"pool_chain": "Chain", "pool_symbol": "Symbol", "pool_apy": "APY", "pool_apy_30d": "30d APY"})
     st.dataframe(df_similar_display)  # Display as a table
 else:
     st.write("No alternative pools found.")
