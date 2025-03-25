@@ -75,9 +75,16 @@ def get_protocols(address, API_KEY):
     response = requests.get(url, headers=headers)
     data = response.json()
     
+    if not data:  # Handle case when API returns empty response
+       return pd.DataFrame(columns=["id", "chain", "name", "site_url", "asset_usd_value", "supply_token_1", "supply_token_2", "supply_token_3"])
+   
     df = pd.DataFrame(data)
     df['address'] = address
     #df = df[df['asset_usd_value'] > 10]
+
+    if df.empty:  # Handle case when DataFrame is empty after creation
+       return pd.DataFrame(columns=["id", "chain", "name", "site_url", "asset_usd_value", "supply_token_1", "supply_token_2", "supply_token_3"])
+
     
     
     df_expanded = df.explode("portfolio_item_list")

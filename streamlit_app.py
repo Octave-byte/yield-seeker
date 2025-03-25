@@ -43,22 +43,26 @@ with tab1:
         
         # 2 - OPTIMIZE YOUR POSITION
         protocol_balance = utils.get_protocols(address, st.secrets["auth_token"])
-        protocol_balance["id"] = protocol_balance["id"].apply(lambda x: x.split("_")[-1] if "_" in x else x)
-        protocol_balance_adj = protocol_balance.merge(utils.mapping_protocol, left_on="id", right_on="debank_id", how="left")
-        protocol_balance_adj = protocol_balance_adj.merge(utils.mapping_chain, left_on="chain", right_on="debank_chain_id", how="left")
-        protocol_balance_adj = protocol_balance_adj.merge(utils.mapping_protocol_category, left_on="defillama_id", right_on="project", how="left")
-        
-        pools_2 = utils.get_pools(min_tvl_opti, categories)
+        if not protocol_balance.empty:
+            protocol_balance["id"] = protocol_balance["id"].apply(lambda x: x.split("_")[-1] if "_" in x else x)
+            protocol_balance_adj = protocol_balance.merge(utils.mapping_protocol, left_on="id", right_on="debank_id", how="left")
+            protocol_balance_adj = protocol_balance_adj.merge(utils.mapping_chain, left_on="chain", right_on="debank_chain_id", how="left")
+            protocol_balance_adj = protocol_balance_adj.merge(utils.mapping_protocol_category, left_on="defillama_id", right_on="project", how="left")
 
-        # Check how much APY your pools earn
-        matched_pools = utils.match_pools(protocol_balance_adj, pools_2)
-        if not matched_pools.empty:
-            matched_pools = matched_pools.merge(utils.mapping_protocol, left_on="protocol_id", right_on="debank_id", how="left")
+            pools_2 = utils.get_pools(min_tvl_opti, categories)
 
-        # Find alternative pools
-        similar_pools = utils.find_similar_pools(protocol_balance_adj, pools_2, vertical=vertical_opti, chain=chain_opti, min_tvl=min_tvl_opti)
-        if not similar_pools.empty:
-            similar_pools = similar_pools.merge(utils.mapping_protocol, left_on="pool_project", right_on="defillama_id", how="left")
+          # Check how much APY your pools earn
+            matched_pools = utils.match_pools(protocol_balance_adj, pools_2)
+            if not matched_pools.empty:
+              matched_pools = matched_pools.merge(utils.mapping_protocol, left_on="protocol_id", right_on="debank_id", how="left")
+
+      # Find alternative pools
+            similar_pools = utils.find_similar_pools(protocol_balance_adj, pools_2, vertical=vertical_opti, chain=chain_opti, min_tvl=min_tvl_opti)
+            if not similar_pools.empty:
+              similar_pools = similar_pools.merge(utils.mapping_protocol, left_on="pool_project", right_on="defillama_id", how="left")
+
+        else:
+            st.warning("No protocol balances found for this address.")
 
     # ✅ Yield Seeker Section
     st.header("Yield Seeker Results")
